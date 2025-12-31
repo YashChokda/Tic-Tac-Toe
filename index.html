@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+
+.container{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding:40px 30px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    width:320px;
+}
+
+.title{
+    font-size:32px;
+    color:white;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#eee;
+    font-size:14px;
+    margin-bottom:30px;
+}
+
+.mode-btn{
+    width:100%;
+    padding:14px;
+    margin:12px 0;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition: all 0.3s ease;
+}
+
+.offline{
+    background:#ffdd59;
+    color:#333;
+}
+
+.computer{
+    background:#1dd1a1;
+    color:white;
+}
+
+.mode-btn:hover{
+    transform: translateY(-3px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
+}
+
+.footer{
+    margin-top:20px;
+    font-size:12px;
+    color:#ddd;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="title">Tic Tac Toe</div>
+    <div class="subtitle">Choose your game mode</div>
+    <a href="2offlineplayers.html">
+        <button class="mode-btn offline" >
+            👥 2 Players Offline
+        </button>
+    </a>
+    <a href="1computer1player.html">
+        <button class="mode-btn computer" >
+            🤖 Player vs Computer
+        </button>
+    </a>
+
+    <div class="footer">Made with ❤️</div>
+</div>
+
+</body>
+</html>

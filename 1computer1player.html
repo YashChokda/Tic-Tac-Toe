@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe - Player vs Computer</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Poppins',Arial,sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+}
+
+/* Main Card */
+.container{
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding:25px;
+  border-radius:20px;
+  width:340px;
+  text-align:center;
+  color:white;
+  box-shadow:0 20px 40px rgba(0,0,0,0.25);
+}
+
+h2{
+  margin-bottom:8px;
+}
+
+#status{
+  margin-bottom:15px;
+  color:#eee;
+}
+
+/* Board */
+.board{
+  display:grid;
+  grid-template-columns: repeat(3,90px);
+  gap:10px;
+  justify-content:center;
+  margin:20px 0;
+}
+
+.cell{
+  width:90px;
+  height:90px;
+  font-size:32px;
+  font-weight:bold;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  background: rgba(255,255,255,0.85);
+  transition:0.2s;
+}
+
+.cell:hover{
+  transform:scale(1.05);
+}
+
+/* Buttons */
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  margin:4px;
+}
+
+.home{
+  background:#1dd1a1;
+  color:white;
+}
+
+.reset{
+  background:#ffdd59;
+  display:none;
+}
+
+/* Overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+/* Result Modal */
+.modal{
+  background:white;
+  padding:25px;
+  border-radius:18px;
+  width:260px;
+  text-align:center;
+  box-shadow:0 15px 30px rgba(0,0,0,0.35);
+}
+
+.modal h3{
+  font-size:22px;
+  margin-bottom:15px;
+}
+
+/* Result Colors */
+.win{ color:#2ecc71; }
+.lose{ color:#e74c3c; }
+.draw{ color:#f1c40f; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Player vs Computer</h2>
+  <p id="status">Your Turn (X)</p>
+
+  <div class="board">
+    <button class="cell" onclick="playerMove(0)"></button>
+    <button class="cell" onclick="playerMove(1)"></button>
+    <button class="cell" onclick="playerMove(2)"></button>
+    <button class="cell" onclick="playerMove(3)"></button>
+    <button class="cell" onclick="playerMove(4)"></button>
+    <button class="cell" onclick="playerMove(5)"></button>
+    <button class="cell" onclick="playerMove(6)"></button>
+    <button class="cell" onclick="playerMove(7)"></button>
+    <button class="cell" onclick="playerMove(8)"></button>
+  </div>
+
+  <button class="home" onclick="goHome()">Home</button>
+  <button class="reset" id="resetBtn" onclick="resetGame()">Reset</button>
+</div>
+
+<!-- Result Popup -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="resultText"></h3>
+    <button onclick="resetGame()">Play Again</button>
+    <button class="home" onclick="goHome()">Home</button>
+  </div>
+</div>
+
+<script>
+/* ===== VARIABLES ===== */
+const HUMAN="X", AI="O";
+let board=["","","","","","","","",""];
+let moves=0, gameOver=false;
+
+const wins=[
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+/* ===== PLAYER MOVE ===== */
+function playerMove(i){
+  if(board[i] || gameOver) return;
+
+  place(i,HUMAN);
+  moves++;
+
+  document.getElementById("resetBtn").style.display="inline-block";
+
+  if(checkWin(board,HUMAN)) return endGame("You Win 🎉","win");
+  if(moves===9) return endGame("It's a Draw 🤝","draw");
+
+  document.getElementById("status").innerText="Computer Thinking...";
+  setTimeout(aiMove,300);
+}
+
+/* ===== AI MOVE ===== */
+function aiMove(){
+  let best=minimax(board.slice(),AI).index;
+  place(best,AI);
+  moves++;
+
+  if(checkWin(board,AI)) return endGame("Computer Wins 🤖","lose");
+  if(moves===9) return endGame("It's a Draw 🤝","draw");
+
+  document.getElementById("status").innerText="Your Turn (X)";
+}
+
+/* ===== PLACE MOVE ===== */
+function place(i,p){
+  board[i]=p;
+  document.getElementsByClassName("cell")[i].innerText=p;
+}
+
+/* ===== CHECK WIN ===== */
+function checkWin(b,p){
+  return wins.some(w=>w.every(i=>b[i]===p));
+}
+
+/* ===== MINIMAX (UNBEATABLE) ===== */
+function minimax(b,p){
+  if(checkWin(b,HUMAN)) return {score:-10};
+  if(checkWin(b,AI)) return {score:10};
+
+  let empty=b.map((v,i)=>v==""?i:null).filter(v=>v!==null);
+  if(!empty.length) return {score:0};
+
+  let best={score:p===AI?-Infinity:Infinity};
+
+  for(let i of empty){
+    b[i]=p;
+    let score=minimax(b.slice(),p===AI?HUMAN:AI).score;
+    b[i]="";
+
+    if(p===AI && score>best.score) best={score,index:i};
+    if(p===HUMAN && score<best.score) best={score,index:i};
+  }
+  return best;
+}
+
+/* ===== END GAME ===== */
+function endGame(msg,type){
+  gameOver=true;
+  const text=document.getElementById("resultText");
+  text.className=type;
+  text.innerText=msg;
+  document.getElementById("overlay").style.display="flex";
+}
+
+/* ===== RESET ===== */
+function resetGame(){
+  board=["","","","","","","","",""];
+  moves=0; gameOver=false;
+  document.getElementById("overlay").style.display="none";
+  document.getElementById("resetBtn").style.display="none";
+  document.getElementById("status").innerText="Your Turn (X)";
+  [...document.getElementsByClassName("cell")].forEach(c=>c.innerText="");
+}
+
+/* ===== HOME ===== */
+function goHome(){
+  window.location.href="index.html";
+}
+</script>
+
+</body>
+</html>

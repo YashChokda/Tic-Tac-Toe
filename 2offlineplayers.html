@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe - 2 Players</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+
+.container{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    width:340px;
+}
+
+.title{
+    font-size:28px;
+    color:white;
+    margin-bottom:10px;
+}
+
+.status{
+    color:#eee;
+    margin-bottom:20px;
+    font-size:16px;
+}
+
+.board{
+    display:grid;
+    grid-template-columns: repeat(3, 90px);
+    gap:10px;
+    justify-content:center;
+}
+
+.cell{
+    width:90px;
+    height:90px;
+    font-size:32px;
+    font-weight:bold;
+    border:none;
+    border-radius:15px;
+    cursor:pointer;
+    background: rgba(255,255,255,0.85);
+    transition:0.2s;
+}
+
+.cell:hover{
+    transform:scale(1.05);
+}
+
+.buttons{
+    margin-top:20px;
+}
+
+.btn{
+    padding:10px 16px;
+    margin:5px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.home-btn{
+    background:#1dd1a1;
+    color:white;
+}
+
+.reset-btn{
+    background:#ffdd59;
+    display:none; /* hidden initially */
+}
+
+/* Overlay */
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    width:280px;
+}
+
+.modal button{
+    padding:10px 20px;
+    margin:6px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.play-again{
+    background:#667eea;
+    color:white;
+}
+
+.home{
+    background:#1dd1a1;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="title">Tic Tac Toe</div>
+    <div class="status" id="status">Player X's Turn</div>
+
+    <div class="board">
+        <button class="cell" onclick="play(0)"></button>
+        <button class="cell" onclick="play(1)"></button>
+        <button class="cell" onclick="play(2)"></button>
+        <button class="cell" onclick="play(3)"></button>
+        <button class="cell" onclick="play(4)"></button>
+        <button class="cell" onclick="play(5)"></button>
+        <button class="cell" onclick="play(6)"></button>
+        <button class="cell" onclick="play(7)"></button>
+        <button class="cell" onclick="play(8)"></button>
+    </div>
+
+    <!-- Buttons -->
+    <div class="buttons">
+        <button class="btn home-btn" onclick="goHome()">Home</button>
+        <button class="btn reset-btn" id="resetBtn" onclick="resetGame()">Reset</button>
+    </div>
+</div>
+
+<!-- Win Popup -->
+<div class="overlay" id="overlay">
+    <div class="modal">
+        <h2 id="winnerText"></h2>
+        <button class="play-again" onclick="resetGame()">Play Again</button>
+        <button class="home" onclick="goHome()">Home</button>
+    </div>
+</div>
+
+<script>
+let board = ["","","","","","","","",""];
+let currentPlayer = "X";
+let gameOver = false;
+let moves = 0;
+
+const winPatterns = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+];
+
+function play(index){
+    if(board[index] !== "" || gameOver) return;
+
+    board[index] = currentPlayer;
+    document.getElementsByClassName("cell")[index].innerText = currentPlayer;
+    moves++;
+
+    // Show reset button after first move
+    if(moves === 1){
+        document.getElementById("resetBtn").style.display = "inline-block";
+    }
+
+    if(checkWin()){
+        gameOver = true;
+        showWinner("Player " + currentPlayer + " Wins 🎉");
+        return;
+    }
+
+    if(moves === 9){
+        gameOver = true;
+        showWinner("It's a Draw 🤝");
+        return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    document.getElementById("status").innerText =
+        "Player " + currentPlayer + "'s Turn";
+}
+
+function checkWin(){
+    return winPatterns.some(p =>
+        board[p[0]] === currentPlayer &&
+        board[p[1]] === currentPlayer &&
+        board[p[2]] === currentPlayer
+    );
+}
+
+function showWinner(msg){
+    document.getElementById("winnerText").innerText = msg;
+    document.getElementById("overlay").style.display = "flex";
+}
+
+function resetGame(){
+    board = ["","","","","","","","",""];
+    currentPlayer = "X";
+    gameOver = false;
+    moves = 0;
+    document.getElementById("status").innerText = "Player X's Turn";
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("resetBtn").style.display = "none";
+    Array.from(document.getElementsByClassName("cell"))
+        .forEach(c => c.innerText = "");
+}
+
+function goHome(){
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
